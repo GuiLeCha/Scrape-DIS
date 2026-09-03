@@ -1,0 +1,32 @@
+# Entornos y credenciales sensibles
+.env
+private/
+*.json
+!credentials_drive.example.json
+
+# Cache de Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+
+# Perfiles de navegador y checkpoints locales
+perfil_navegador/
+checkpoints/
+*.tmp
+
+# Archivos de log
+*.log
+
+# Materiales descargados
+descargas/
+material/
+output/
+
+# IDE y sistema operativo
+.vscode/
+.idea/
+Thumbs.db
+Desktop.ini
+.DS_Store
