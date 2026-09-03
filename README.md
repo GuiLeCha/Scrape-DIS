@@ -70,7 +70,7 @@ python main.py
 O utilizando el wrapper de compatibilidad:
 
 ```bash
-python aws_academy_extractor_v3_6.py
+python aws_academy_extractor.py
 ```
 
 ### Flujo de trabajo:
@@ -84,7 +84,7 @@ python aws_academy_extractor_v3_6.py
 
 ```text
 ├── main.py                         # Punto de entrada principal
-├── aws_academy_extractor_v3_6.py   # Wrapper de compatibilidad
+├── aws_academy_extractor.py   # Wrapper de compatibilidad
 ├── requirements.txt                # Dependencias del proyecto
 ├── .env.example                    # Plantilla de configuración
 ├── aws_extractor/                  # Paquete modular
