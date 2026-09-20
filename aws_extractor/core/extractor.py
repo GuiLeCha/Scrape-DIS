@@ -46,6 +46,8 @@ class Extractor:
         self.profile_dir.mkdir(parents=True, exist_ok=True)
         cleanup_profile_lock(self.profile_dir)
 
+        from aws_extractor.core.login import wait_or_auto_login
+
         with sync_playwright() as p:
             self.log("Abriendo Chromium con el perfil persistente...")
             context = p.chromium.launch_persistent_context(
@@ -58,23 +60,15 @@ class Extractor:
 
             page = context.pages[0] if context.pages else context.new_page()
 
-            try:
-                page.goto(home_url, wait_until="domcontentloaded", timeout=60_000)
-            except PlaywrightTimeoutError:
-                pass
-
-            self.log(
-                "Iniciá sesión normalmente. Cuando estés dentro de AWS Academy, "
-                "volvé al extractor y pulsá «Ya inicié sesión / guardar sesión»."
+            wait_or_auto_login(
+                context=context,
+                page=page,
+                home_url=home_url,
+                username=self.settings.aws_username,
+                password=self.settings.aws_password,
+                login_done_event=login_done_event,
+                log_fn=self.log,
             )
-
-            while not login_done_event.is_set():
-                try:
-                    if not [pg for pg in context.pages if not pg.is_closed()]:
-                        break
-                except Exception:
-                    break
-                time.sleep(0.25)
 
             try:
                 context.close()
@@ -99,7 +93,13 @@ class Extractor:
             )
             try:
                 page = context.pages[0] if context.pages else context.new_page()
-                modules = fetch_all_modules(page, home_url, log_fn=self.log)
+                modules = fetch_all_modules(
+                    page,
+                    home_url,
+                    log_fn=self.log,
+                    username=self.settings.aws_username,
+                    password=self.settings.aws_password,
+                )
                 return modules
             finally:
                 try:
@@ -228,6 +228,8 @@ class Extractor:
                     home_url=home_url,
                     module_title=module,
                     log_fn=self.log,
+                    username=self.settings.aws_username,
+                    password=self.settings.aws_password,
                 )
                 items = discovery["items"]
 

@@ -60,6 +60,14 @@ class Settings:
             "https://awsacademy.instructure.com/courses/183094/modules",
         ).strip()
 
+        # Credenciales de acceso AWS Academy (opcional, para auto-login)
+        self.aws_username = (
+            os.getenv("AWS_USER", "").strip()
+            or os.getenv("AWS_USERNAME", "").strip()
+            or os.getenv("AWS_EMAIL", "").strip()
+        )
+        self.aws_password = os.getenv("AWS_PASSWORD", "").strip()
+
         # Timeouts en segundos
         self.viewer_load_timeout = int(os.getenv("VIEWER_LOAD_TIMEOUT", "240"))
         self.page_render_timeout = int(os.getenv("PAGE_RENDER_TIMEOUT", "90"))

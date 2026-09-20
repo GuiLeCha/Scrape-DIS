@@ -92,6 +92,8 @@ class ContentPlayer:
                     home_url=home_url,
                     module_title=module_title,
                     log_fn=self.log,
+                    username=self.settings.aws_username,
+                    password=self.settings.aws_password,
                 )
 
                 all_items = discovery.get("items") or []

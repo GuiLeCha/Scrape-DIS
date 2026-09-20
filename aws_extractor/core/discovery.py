@@ -41,9 +41,6 @@ def evaluation_reason(item: dict) -> str | None:
     if "assignment" in item_type or "assignment" in classes:
         return f"tipo Canvas: {item_type or 'assignment'}"
 
-    if "external_tool" in item_type or "external_tool" in classes or "lti" in classes:
-        return f"herramienta externa / laboratorio: {item_type or 'external_tool'}"
-
     if graded == "1":
         return "ítem calificable (graded=1)"
 
@@ -61,7 +58,8 @@ def evaluation_reason(item: dict) -> str | None:
             return "título identificado como evaluación/quiz"
 
     lab_patterns = (
-        r"\blaboratorio\b",
+        r"\bejercicio\s+de\s+laboratorio\b",
+        r"\blaboratorio\s+\d+\b",
         r"\bhands-on\s+lab\b",
         r"\bguided\s+lab\b",
         r"\bchallenge\s+lab\b",
@@ -69,7 +67,6 @@ def evaluation_reason(item: dict) -> str | None:
         r"\blearner\s+lab\b",
         r"\blab\s+\d+\b",
         r"\blab:\b",
-        r"\bpr[aá]ctica\b",
     )
 
     for pattern in lab_patterns:
@@ -191,7 +188,13 @@ def extract_canvas_modules_tree(page) -> list[dict]:
     return modules or []
 
 
-def fetch_all_modules(page, home_url: str, log_fn=None) -> list[str]:
+def fetch_all_modules(
+    page,
+    home_url: str,
+    log_fn=None,
+    username: str = "",
+    password: str = "",
+) -> list[str]:
     """
     Navega a la página de módulos y devuelve una lista con todos los nombres de módulos disponibles.
     """
@@ -210,6 +213,18 @@ def fetch_all_modules(page, home_url: str, log_fn=None) -> list[str]:
 
     time.sleep(1.0)
     modules = extract_canvas_modules_tree(page)
+
+    if not modules and username and password:
+        from aws_extractor.core.login import try_auto_login
+
+        if try_auto_login(page, username, password, log_fn=log):
+            try:
+                page.wait_for_selector(".context_module", timeout=30_000)
+            except Exception:
+                pass
+            time.sleep(1.5)
+            modules = extract_canvas_modules_tree(page)
+
     titles = [
         str(m.get("title") or "").strip()
         for m in modules
@@ -224,6 +239,8 @@ def discover_module_items(
     home_url: str,
     module_title: str,
     log_fn=None,
+    username: str = "",
+    password: str = "",
 ) -> dict:
     """
     Abre la página /modules, localiza el módulo por título y obtiene
@@ -252,6 +269,17 @@ def discover_module_items(
 
     time.sleep(1.5)
     modules = extract_canvas_modules_tree(page)
+
+    if not modules and username and password:
+        from aws_extractor.core.login import try_auto_login
+
+        if try_auto_login(page, username, password, log_fn=log):
+            try:
+                page.wait_for_selector(".context_module", timeout=30_000)
+            except Exception:
+                pass
+            time.sleep(1.5)
+            modules = extract_canvas_modules_tree(page)
 
     if not modules:
         current_url = ""
