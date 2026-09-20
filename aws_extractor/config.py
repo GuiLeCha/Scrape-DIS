@@ -95,3 +95,9 @@ class Settings:
             "private/token_drive.json",
         )
 
+        # Human Walkthrough Simulation
+        self.sim_pdf_page_seconds = int(os.getenv("SIM_PDF_PAGE_SECONDS", "12"))
+        self.sim_html_reading_seconds = int(os.getenv("SIM_HTML_READING_SECONDS", "10"))
+        self.sim_video_speed = float(os.getenv("SIM_VIDEO_SPEED", "1.0"))
+        self.sim_scroll_delay = float(os.getenv("SIM_SCROLL_DELAY", "0.8"))
+

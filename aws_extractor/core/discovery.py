@@ -41,6 +41,9 @@ def evaluation_reason(item: dict) -> str | None:
     if "assignment" in item_type or "assignment" in classes:
         return f"tipo Canvas: {item_type or 'assignment'}"
 
+    if "external_tool" in item_type or "external_tool" in classes or "lti" in classes:
+        return f"herramienta externa / laboratorio: {item_type or 'external_tool'}"
+
     if graded == "1":
         return "ítem calificable (graded=1)"
 
@@ -55,7 +58,23 @@ def evaluation_reason(item: dict) -> str | None:
 
     for pattern in evaluation_patterns:
         if re.search(pattern, title_norm, flags=re.IGNORECASE):
-            return "título identificado como evaluación"
+            return "título identificado como evaluación/quiz"
+
+    lab_patterns = (
+        r"\blaboratorio\b",
+        r"\bhands-on\s+lab\b",
+        r"\bguided\s+lab\b",
+        r"\bchallenge\s+lab\b",
+        r"\bsandbox\b",
+        r"\blearner\s+lab\b",
+        r"\blab\s+\d+\b",
+        r"\blab:\b",
+        r"\bpr[aá]ctica\b",
+    )
+
+    for pattern in lab_patterns:
+        if re.search(pattern, title_norm, flags=re.IGNORECASE):
+            return "laboratorio práctico online (requiere consola AWS manual)"
 
     return None
 

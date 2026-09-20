@@ -11,6 +11,7 @@ from tkinter import filedialog, messagebox, ttk
 from aws_extractor.config import APP_NAME, Settings
 from aws_extractor.core.drive import GoogleDriveUploader
 from aws_extractor.core.extractor import Extractor
+from aws_extractor.core.player import ContentPlayer
 from aws_extractor.utils import (
     enable_windows_dpi_awareness,
     safe_name,
@@ -29,6 +30,7 @@ class App(tk.Tk):
     GREEN = "#1fbe63"
     GREEN_ACTIVE = "#18a956"
     PURPLE = "#7c57e3"
+    PURPLE_ACTIVE = "#663fd4"
     RED = "#d93025"
     RED_ACTIVE = "#b5251c"
 
@@ -86,6 +88,7 @@ class App(tk.Tk):
         self.login_in_progress = False
         self.cancel_event = threading.Event()
         self.download_in_progress = False
+        self.play_in_progress = False
 
         self._configure_styles()
 
@@ -94,6 +97,12 @@ class App(tk.Tk):
             log_callback=self._thread_log,
             progress_callback=self._thread_progress,
             sub_progress_callback=self._thread_sub_progress,
+        )
+
+        self.player = ContentPlayer(
+            settings=self.settings,
+            log_callback=self._thread_log,
+            progress_callback=self._thread_progress,
         )
 
         self.drive_uploader = GoogleDriveUploader(
@@ -357,7 +366,7 @@ class App(tk.Tk):
         # -------------------------------------------------------------
         buttons = tk.Frame(root, bg=self.BG)
         buttons.grid(row=4, column=0, sticky="ew", pady=(self._px(6), self._px(4)))
-        buttons.grid_columnconfigure(3, weight=1)
+        buttons.grid_columnconfigure(4, weight=1)
 
         self.login_btn = tk.Button(
             buttons,
@@ -388,10 +397,27 @@ class App(tk.Tk):
             bd=0,
             cursor="hand2",
             font=("Segoe UI", 11),
-            padx=self._px(20),
+            padx=self._px(16),
             pady=self._px(4),
         )
         self.download_btn.grid(row=0, column=1, sticky="w", padx=(self._px(10), 0))
+
+        self.play_btn = tk.Button(
+            buttons,
+            text="▶  3. Reproducir contenido",
+            command=self._play_walkthrough,
+            bg=self.PURPLE,
+            fg="white",
+            activebackground=self.PURPLE_ACTIVE,
+            activeforeground="white",
+            relief="flat",
+            bd=0,
+            cursor="hand2",
+            font=("Segoe UI", 11),
+            padx=self._px(16),
+            pady=self._px(4),
+        )
+        self.play_btn.grid(row=0, column=2, sticky="w", padx=(self._px(10), 0))
 
         self.cancel_btn = tk.Button(
             buttons,
@@ -409,10 +435,10 @@ class App(tk.Tk):
             padx=self._px(12),
             pady=self._px(4),
         )
-        self.cancel_btn.grid(row=0, column=2, sticky="w", padx=(self._px(10), 0))
+        self.cancel_btn.grid(row=0, column=3, sticky="w", padx=(self._px(10), 0))
 
         right_buttons = tk.Frame(buttons, bg=self.BG)
-        right_buttons.grid(row=0, column=4, sticky="e")
+        right_buttons.grid(row=0, column=5, sticky="e")
 
         ttk.Button(
             right_buttons,
@@ -568,6 +594,7 @@ class App(tk.Tk):
 
         self.login_btn.config(text="✓  Guardar sesión")
         self.download_btn.config(state="disabled")
+        self.play_btn.config(state="disabled")
         self.list_modules_btn.config(state="disabled")
 
         def task():
@@ -595,6 +622,7 @@ class App(tk.Tk):
             state="normal",
         )
         self.download_btn.config(state="normal")
+        self.play_btn.config(state="normal")
         self.list_modules_btn.config(state="normal")
 
     def _list_modules(self):
@@ -626,7 +654,7 @@ class App(tk.Tk):
         threading.Thread(target=task, daemon=True).start()
 
     def _cancel(self):
-        if self.download_in_progress:
+        if self.download_in_progress or self.play_in_progress:
             self._append_log_line("Cancelación solicitada por el usuario...")
             self.cancel_event.set()
             self.cancel_btn.config(state="disabled")
@@ -673,6 +701,7 @@ class App(tk.Tk):
 
         self.login_btn.config(state="disabled")
         self.download_btn.config(state="disabled")
+        self.play_btn.config(state="disabled")
         self.list_modules_btn.config(state="disabled")
         self.cancel_btn.config(state="normal")
         self._set_progress(0)
@@ -749,10 +778,64 @@ class App(tk.Tk):
 
         threading.Thread(target=task, daemon=True).start()
 
+    def _play_walkthrough(self):
+        module = self.module_var.get().strip()
+        home_url = self.home_var.get().strip()
+
+        if not module:
+            messagebox.showwarning(
+                APP_NAME,
+                "Escribí o seleccioná el título del módulo a reproducir.",
+            )
+            return
+
+        if not home_url:
+            messagebox.showwarning(APP_NAME, "URL base de AWS Academy no configurada.")
+            return
+
+        self.play_in_progress = True
+        self.cancel_event.clear()
+
+        self.login_btn.config(state="disabled")
+        self.download_btn.config(state="disabled")
+        self.play_btn.config(state="disabled")
+        self.list_modules_btn.config(state="disabled")
+        self.cancel_btn.config(state="normal")
+        self._set_progress(0)
+
+        self._append_log_line(f'Iniciando recorrido online del módulo: "{module}"')
+
+        def task():
+            try:
+                self.player.play_module(
+                    module_title=module,
+                    home_url=home_url,
+                    cancel_event=self.cancel_event,
+                )
+                if self.cancel_event.is_set():
+                    self._append_log_line("Recorrido interrumpido por el usuario.")
+                else:
+                    self._append_log_line("Recorrido online del módulo completado.")
+                    self.after(
+                        0,
+                        lambda: messagebox.showinfo(
+                            APP_NAME,
+                            f"Recorrido del módulo completado:\n{module}",
+                        ),
+                    )
+            except Exception as exc:
+                self._thread_error(f"Error en el recorrido: {exc}")
+            finally:
+                self.after(0, self._enable_buttons)
+
+        threading.Thread(target=task, daemon=True).start()
+
     def _enable_buttons(self):
         self.download_in_progress = False
+        self.play_in_progress = False
         self.login_btn.config(text="🌐  1. Iniciar sesión AWS", state="normal")
         self.download_btn.config(state="normal")
+        self.play_btn.config(state="normal")
         self.list_modules_btn.config(state="normal")
         self.cancel_btn.config(state="disabled")
 

@@ -76,7 +76,8 @@ python aws_academy_extractor.py
 ### Flujo de trabajo:
 1. Pulsa **«🌐 1. Iniciar sesión AWS»** para autenticarte en AWS Academy con tu cuenta y guardar la sesión persistente.
 2. Pulsa **«🔄 Listar módulos»** para cargar los módulos del curso en el desplegable, o escribe directamente el nombre del módulo.
-3. Pulsa **«⇩ 2. Descargar módulo»** para iniciar la extracción automatizada.
+3. Pulsa **«⇩ 2. Descargar módulo»** para iniciar la extracción automatizada y guardado local.
+4. O pulsa **«▶ 3. Reproducir contenido»** para recorrer el curso en línea simulando a un estudiante humano: reproduce videos con subtítulos en español activados, hojea PDFs y lee páginas HTML, omitiendo automáticamente quizzes y laboratorios prácticos.
 
 ---
 
@@ -84,7 +85,7 @@ python aws_academy_extractor.py
 
 ```text
 ├── main.py                         # Punto de entrada principal
-├── aws_academy_extractor.py   # Wrapper de compatibilidad
+├── aws_academy_extractor.py        # Wrapper de compatibilidad
 ├── requirements.txt                # Dependencias del proyecto
 ├── .env.example                    # Plantilla de configuración
 ├── aws_extractor/                  # Paquete modular
@@ -94,7 +95,8 @@ python aws_academy_extractor.py
 │   │   ├── checkpoint.py           # Gestión atómica de estados y validación
 │   │   ├── discovery.py            # Detección y filtrado en Canvas LMS
 │   │   ├── drive.py                # Sincronización con Google Drive (OAuth2)
-│   │   └── extractor.py            # Orquestador del flujo y Playwright
+│   │   ├── extractor.py            # Orquestador de descargas y Playwright
+│   │   └── player.py               # Reproducción online y recorrido simulado
 │   ├── extractors/
 │   │   ├── base.py                 # Descarga de recursos HTTP
 │   │   ├── html_pdf.py             # Conversión HTML Canvas a PDF
