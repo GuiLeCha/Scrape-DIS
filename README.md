@@ -1,209 +1,180 @@
 # Scrape-DIS (AWS Academy Extractor & Content Player)
 
-Herramienta automatizada en Python para estudiantes y docentes de **AWS Academy** sobre la plataforma **Canvas LMS**. 
+> **Herramienta automatizada para estudiantes y docentes de AWS Academy sobre la plataforma Canvas LMS.**
 
-Permite interactuar con los cursos de dos formas:
-1. **Descarga estructurada de módulos**: Extrae guías PDF completas, videos interactivos SCORM con subtítulos en español incrustados (vía FFmpeg) y lecturas HTML organizadas en carpetas por módulo.
-2. **Reproducción online con ritmo humano**: Recorre el curso de forma interactiva en el navegador, detecta videos, activa subtítulos en español, respeta su duración completa, hojea documentos PDF página a página y avanza de sección mediante el botón nativo **«Next / Siguiente»** de Canvas, omitiendo automáticamente evaluaciones y cuestionarios.
+![Demostración en video de Scrape-DIS](assets/demo.gif)
 
----
-
-## 📋 Requisitos Previos
-
-Antes de comenzar, asegúrate de tener instalado en tu equipo:
-
-1. **Python 3.10 o superior** (descárgalo desde [python.org](https://www.python.org/downloads/) asegurándote de marcar la casilla *"Add python.exe to PATH"*).
-2. **Google Chrome** instalado en el sistema (Playwright lo utiliza directamente para interactuar con Canvas y los componentes SCORM).
-3. **FFmpeg** (necesario únicamente si vas a descargar videos y quemar subtítulos):
-   - Descarga FFmpeg desde [gyan.dev/ffmpeg/builds](https://www.gyan.dev/ffmpeg/builds/) (versión `ffmpeg-release-essentials.zip`).
-   - Descomprímelo (por ejemplo en `C:\ffmpeg`) y agrega su subcarpeta `bin` al PATH de Windows, o configura la ruta exacta en el archivo `.env`.
+🎬 **[Descargar / Ver Video Tutorial con Audio Explicativo (Voz en off IA)](assets/tutorial_video.mp4)** *(Duración: 1 min 25 s, formato MP4 ligero)*
 
 ---
 
-## 🚀 Instalación Rápida
+## 💡 ¿Qué hace este programa?
 
-Sigue estos pasos en tu terminal (PowerShell o CMD):
+Este sistema resuelve de forma automática dos necesidades esenciales al cursar en AWS Academy:
 
-### 1. Clonar el repositorio
-```bash
-git clone https://github.com/GuiLeCha/Scrape-DIS.git
-cd Scrape-DIS
-```
-
-### 2. Crear y activar un entorno virtual
-Recomendado para mantener las librerías aisladas:
-
-**En Windows (PowerShell):**
-```powershell
-python -m venv venv
-.\venv\Scripts\Activate.ps1
-```
-> *Nota: Si PowerShell te muestra un error sobre ejecución de scripts, ejecuta antes:*
-> ```powershell
-> Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
-> ```
-
-**En Windows (CMD):**
-```cmd
-python -m venv venv
-venv\Scripts\activate.bat
-```
-
-### 3. Instalar dependencias de Python
-```bash
-pip install --upgrade pip
-pip install -r requirements.txt
-```
-
-### 4. Instalar los binarios de Playwright
-```bash
-playwright install chromium
-```
+| Modalidad | ¿Para qué sirve? | ¿Qué hace en tu computadora? |
+| :--- | :--- | :--- |
+| **Opción 1: Descarga Estructurada** | Para tener todo el material de estudio sin conexión a internet. | Descarga las guías de estudio completas en PDF (todas las páginas renderizadas en alta resolución), baja los videos interactivos con subtítulos en español incrustados (vía FFmpeg) y guarda las lecturas HTML en carpetas ordenadas por módulo. |
+| **Opción 2: Reproducción Humana Online** | Para recorrer el contenido directamente en Canvas sin saturar tu disco ni tu red. | Abre Chrome, espera a que carguen los reproductores interactivos (SCORM / Video.js), activa los subtítulos en español, respeta la duración completa de cada video, hojea los documentos PDF página a página y avanza de sección apretando el botón **«Next / Siguiente»** de Canvas, salteando automáticamente cuestionarios y exámenes. |
 
 ---
 
-## ⚙️ Configuración (.env)
+## ⚡ Guía Rápida en 3 Pasos (Sin tocar comandos)
 
-El proyecto incluye una plantilla de configuración llamada `.env.example`. Crea tu archivo `.env` a partir de ella:
+Si estás en Windows y no quieres lidiar con consolas ni configuraciones técnicas, creamos tres archivos ejecutables para que lo pongas en marcha con un par de clics:
 
-**En Windows:**
-```cmd
-copy .env.example .env
+```text
+📁 Scrape-DIS/
+├── 1_instalar.bat      <-- Paso 1: Doble clic para instalar todo
+├── 2_configurar.bat    <-- Paso 2: Doble clic para poner tu usuario y clave
+└── 3_iniciar.bat       <-- Paso 3: Doble clic para arrancar el programa
 ```
 
-Abre `.env` con cualquier editor de texto (Notepad, VS Code, etc.) y completa tus parámetros:
+### Paso 1: Instalar dependencias
+1. Descargá o cloná este repositorio en tu computadora.
+2. Hacé **doble clic en `1_instalar.bat`**.
+   - El script verificará que tengas Python instalado.
+   - Creará automáticamente el entorno virtual (`venv`).
+   - Instalará todas las librerías necesarias (`Playwright`, `Pillow`, etc.).
+   - Descargará el navegador Chromium para interactuar con Canvas.
 
-```ini
-# ==============================================================================
-# 1. ACCESO A AWS ACADEMY / CANVAS
-# ==============================================================================
-# Credenciales para inicio de sesión automático.
-# Si las dejas en blanco, podrás iniciar sesión a mano en la ventana de Chrome.
-AWS_USER=tu_usuario_o_correo@ejemplo.com
-AWS_PASSWORD=tu_contraseña_aqui
+> *Requisito:* Tener instalado [Python 3.10 o superior](https://www.python.org/downloads/) (marcando la casilla *"Add python.exe to PATH"*) y Google Chrome.
 
-# URL de la sección de módulos de tu curso (por defecto: IFTS29 - 2C2026)
-AWS_HOME_URL=https://awsacademy.instructure.com/courses/183094/modules
+### Paso 2: Configurar tu acceso
+1. Hacé **doble clic en `2_configurar.bat`**.
+2. Se abrirá automáticamente el archivo de configuración `.env` en el **Bloc de Notas**:
+   ```ini
+   # 1. Ingresá tu usuario y contraseña de AWS Academy / Canvas:
+   AWS_USER=tu_usuario_o_correo@ejemplo.com
+   AWS_PASSWORD=tu_contraseña_aqui
 
-# ==============================================================================
-# 2. RUTAS LOCALES
-# ==============================================================================
-# Carpeta donde se guardará el material descargado
-OUTPUT_DIR=C:/Users/TuUsuario/Documents/AWS_Material
-
-# Carpeta de perfil de Chrome (guarda tu sesión para no pedir login cada vez)
-PROFILE_DIR=C:/Users/TuUsuario/.aws_academy_extractor_profile
-
-# ==============================================================================
-# 3. FFMPEG (DESCARGAS DE VIDEO)
-# ==============================================================================
-# Ruta al ejecutable de FFmpeg
-FFMPEG_PATH=C:/ffmpeg/bin/ffmpeg.exe
-BURN_SUBTITLES=true
-
-# ==============================================================================
-# 4. VELOCIDAD Y SIMULACIÓN HUMANA (REPRODUCCIÓN ONLINE)
-# ==============================================================================
-SIM_VIDEO_SPEED=1.0          # Velocidad de reproducción (1.0x = tiempo real)
-SIM_PDF_PAGE_SECONDS=12      # Segundos que permanece en cada página del PDF
-SIM_HTML_READING_SECONDS=10  # Segundos de lectura en páginas de texto
-SIM_SCROLL_DELAY=0.8         # Intervalo entre desplazamientos de scroll
-```
+   # 2. La URL de tu curso (por defecto configurado para IFTS29 - 2C2026):
+   AWS_HOME_URL=https://awsacademy.instructure.com/courses/183094/modules
+   ```
+3. Guardá los cambios con `Ctrl + G` y cerrá el Bloc de Notas.
 
 > [!NOTE]
-> **Identificador del Curso (`183094`):**
-> El valor `183094` en la URL predeterminada corresponde al curso **"AWS Academy Cloud Foundations para IFTS29 - 2C2026"**.  
-> Si perteneces a otra comisión, curso o institución, es posible que este identificador sea diferente. Para asegurarte:
-> 1. Inicia sesión en Canvas de AWS Academy y accede a tu curso.
-> 2. Dirígete a la pestaña **Módulos** (o *Modules*).
-> 3. Observa la barra de direcciones de tu navegador: verás un enlace similar a `https://awsacademy.instructure.com/courses/XXXXXX/modules`.
-> 4. Si el número no coincide con `183094`, copia tu número de curso y actualiza la variable `AWS_HOME_URL` en tu archivo `.env`.
+> **Sobre el número de curso (`183094`):**
+> Este número corresponde al curso **"AWS Academy Cloud Foundations para IFTS29 - 2C2026"**.  
+> Si perteneces a otra comisión, curso o institución, entra a tu Canvas, ve a la sección **Módulos** y fíjate qué número figura en la barra de direcciones de tu navegador (`https://awsacademy.instructure.com/courses/<TU_NUMERO>/modules`). Si es distinto, cámbialo en la línea `AWS_HOME_URL` de tu `.env`.
+
+### Paso 3: Iniciar el programa
+1. Hacé **doble clic en `3_iniciar.bat`**.
+2. Se abrirá la consola interactiva listando todos los módulos de tu curso.
+3. ¡Listo! Elegí qué módulo querés procesar y qué acción realizar.
 
 ---
 
-## 💻 Modos de Uso
+## 🖥️ Manual de Uso de la Consola
 
-Ejecuta el programa principal con:
-
-```bash
-python aws_academy_extractor.py
-```
-
-Se abrirá una interfaz interactiva en consola que listará todos los módulos disponibles en tu curso de Canvas:
+Al iniciar el programa verás una pantalla como esta:
 
 ```text
 ============================================================
               AWS Academy Material Extractor
 ============================================================
 
-1. Módulo 1 - Cloud Concepts Overview
-2. Módulo 2 - Cloud Economics and Billing
-3. Módulo 3 - AWS Global Infrastructure Overview
+1. Módulo 1 - Información general sobre los conceptos de la nube
+2. Módulo 2 - Aspectos económicos de la nube y facturación
+3. Módulo 3 - Información general sobre la infraestructura global de AWS
+4. Módulo 4 - Información general sobre la seguridad en la nube
 ...
+Ingrese el número de módulo a procesar (o 'T' para todos, 'Q' para salir):
 ```
 
-Selecciona el número del módulo con el que deseas trabajar (o `T` para todos). A continuación, el programa te consultará qué acción deseas realizar:
+### ¿Qué opción elegir?
 
-### Opción 1: Descargar módulo
-- Analiza todos los ítems del módulo seleccionado.
-- **Videos**: Descarga streams interactivos SCORM/VideoJS, descarga subtítulos en español y los incrusta en el video resultante con FFmpeg.
-- **Guías de estudio (PDF)**: Espera a que el visor renderice todas las páginas en alta resolución y genera el archivo PDF completo.
-- **Páginas HTML**: Guarda el contenido y diagramas en formato web navegable sin conexión.
-- **Reanudación inteligente**: Si cancelas o se corta la conexión, al volver a correr no descargará los archivos que ya estén completos.
+1. **Ingresá el número del módulo** (por ejemplo `3`) o escribí `T` para procesar todo el curso completo de forma secuencial.
+2. A continuación, el sistema te preguntará qué acción querés realizar:
+   * **Opción [1] Descargar módulo:**
+     - Analiza todos los ítems del módulo.
+     - Descarga videos con subtítulos pegados, PDFs completos y lecturas HTML en la carpeta `descargas_aws/`.
+     - Si cancelás o se interrumpe, podés volver a ejecutarlo: gracias a su **reanudación inteligente**, nunca vuelve a descargar lo que ya tenías guardado.
+   * **Opción [2] Reproducir contenido (Online / Humano):**
+     - Abre una ventana visible de Google Chrome.
+     - Recorre cada ítem respetando tiempos de lectura realistas.
+     - En los videos: detecta el reproductor interactivo SCORM/Video.js, activa los subtítulos en español y espera a que termine.
+     - En las guías PDF: aguarda a que el visor cargue las páginas (ej. 44 páginas de la Student Guide) y realiza un hojeado progresivo.
+     - Al concluir cada lección, presiona el botón nativo **«Next / Siguiente»** del pie de página de Canvas.
+     - **Salta automáticamente los exámenes y cuestionarios** (quizzes/assignments) para que no haya riesgo de resolverlos accidentalmente.
 
-### Opción 2: Reproducir contenido (Modo Humano Online)
-Diseñado para recorrer el curso directamente dentro de Canvas sin saturar la red ni guardar archivos en disco:
-- **Detección inteligente de componentes**: Aguarda dinámicamente hasta 35 segundos para que los iframes interactivos (SCORM, Video.js o PDFViewer) terminen de cargarse.
-- **Videos online con subtítulos**: Localiza el reproductor, activa los subtítulos en español (`mode: showing`) y reproduce el video de principio a fin a velocidad normal.
-- **Lectura de PDFs**: Detecta el visor Canvas PDF, cuenta la cantidad total de páginas (ej. 44 páginas de la *Student Guide*) y hace scroll suave página a página simulando la lectura de un estudiante.
-- **Transición nativa con botón «Next»**: Al finalizar cada sección, busca y presiona el botón nativo **«Next / Siguiente»** del pie de página de Canvas para avanzar fluidamente a la siguiente lección.
-- **Omisión de tareas y exámenes**: Detecta y salta automáticamente cuestionarios (`quizzes`), asignaciones (`assignments`) y laboratorios externos para que puedas realizarlos de forma manual.
+---
+
+## 💻 Instalación Avanzada (Para usuarios de Terminal / Git)
+
+Si prefieres trabajar desde la línea de comandos (PowerShell, Bash o CMD):
+
+```bash
+# 1. Clonar el repositorio
+git clone https://github.com/GuiLeCha/Scrape-DIS.git
+cd Scrape-DIS
+
+# 2. Crear y activar entorno virtual
+python -m venv venv
+.\venv\Scripts\activate.bat   # En CMD
+.\venv\Scripts\Activate.ps1  # En PowerShell
+
+# 3. Instalar dependencias y navegador
+pip install -r requirements.txt
+playwright install chromium
+
+# 4. Crear archivo de configuración
+copy .env.example .env
+# (Edita .env con tus credenciales)
+
+# 5. Ejecutar
+python aws_academy_extractor.py
+```
 
 ---
 
 ## 🛠️ Preguntas Frecuentes y Solución de Problemas
 
-#### 1. ¿Qué pasa si mi cuenta requiere Doble Factor de Autenticación (2FA / MFA)?
-El navegador Chrome se abre de forma visible en pantalla. Si Canvas te solicita un código SMS o una app de autenticación, ingrésalo normalmente en la ventana. La sesión quedará guardada en la carpeta especificada en `PROFILE_DIR`, por lo que las siguientes ejecuciones entrarán directo sin volver a pedirte el código.
+#### 1. ¿Qué pasa si mi cuenta me pide código por SMS o app (2FA / MFA)?
+El navegador Chrome se abre visible en tu pantalla. La primera vez que te pida el código de verificación, ingrésalo normalmente a mano. La sesión quedará guardada en tu carpeta de perfil (`PROFILE_DIR`), de modo que las siguientes veces entrará directo sin pedir autenticación.
 
-#### 2. Mensaje "Chrome ya se encuentra en ejecución o el perfil está bloqueado"
-Si cerraste abruptamente el programa en una ejecución anterior, puede quedar un archivo `SingletonLock` en la carpeta `PROFILE_DIR`. El programa lo limpia automáticamente en cada inicio, pero si persiste, asegúrate de que no haya ventanas de Chrome abiertas en segundo plano o elimina manualmente el archivo `SingletonLock` dentro de `PROFILE_DIR`.
+#### 2. Mensaje de error sobre "SingletonLock" o "Perfil en uso"
+Si cerraste la consola de golpe con la 'X' mientras el navegador estaba abierto, puede quedar bloqueado el archivo de sesión. El programa intenta desbloquearlo automáticamente, pero si persiste, asegúrate de cerrar todas las ventanas de Chrome y elimina la carpeta `.aws_chrome_profile` o el archivo `SingletonLock` que haya dentro.
 
-#### 3. Error `ffmpeg is not recognized` o `No se encontró FFmpeg`
-Verifica que en tu archivo `.env` la variable `FFMPEG_PATH` apunte al archivo `ffmpeg.exe` existente en tu disco (utilizando barras normales `/`, por ejemplo: `C:/ffmpeg/bin/ffmpeg.exe`).
+#### 3. ¿Cómo instalo FFmpeg si no lo tengo?
+FFmpeg solo es necesario si eliges **descargar videos** y querés que les pegue los subtítulos en español. En Windows 10/11 podés instalarlo en un segundo abriendo una consola y ejecutando:
+```powershell
+winget install Gyan.FFmpeg
+```
+O descargando el binario desde [gyan.dev/ffmpeg/builds](https://www.gyan.dev/ffmpeg/builds/) y configurando la ruta en `FFMPEG_PATH` dentro de tu `.env`.
 
-#### 4. Pausar o cancelar una tarea en ejecución
-Puedes presionar `Ctrl + C` en la consola en cualquier momento. El programa cerrará el contexto del navegador de forma segura y liberará el perfil de usuario.
+#### 4. ¿Cómo pausar o detener la ejecución?
+En cualquier momento puedes presionar `Ctrl + C` en la ventana de consola. El programa cerrará el navegador de forma ordenada sin dañar ningún archivo ni perfil.
 
 ---
 
-## 📁 Estructura del Código
+## 📁 Estructura del Repositorio
 
 ```text
 Scrape-DIS/
-├── aws_academy_extractor.py      # Punto de entrada principal
-├── requirements.txt              # Dependencias del proyecto
-├── .env.example                  # Plantilla de configuración
-├── README.md                     # Documentación general
-└── aws_extractor/                # Paquete modular
-    ├── config.py                 # Carga de variables de entorno y Settings
+├── 1_instalar.bat                # Instalador automático en 1 clic
+├── 2_configurar.bat              # Asistente de configuración de .env
+├── 3_iniciar.bat                 # Lanzador del programa
+├── aws_academy_extractor.py      # Punto de entrada en Python
+├── requirements.txt              # Librerías de Python requeridas
+├── .env.example                  # Plantilla documentada de variables
+├── README.md                     # Este manual de usuario
+├── assets/                       # Material audiovisual
+│   ├── demo.gif                  # Demostración animada
+│   └── tutorial_video.mp4        # Video explicativo completo con voz IA
+└── aws_extractor/                # Código fuente modular
+    ├── config.py                 # Gestor de configuración y .env
     ├── core/
-    │   ├── discovery.py          # Detección y clasificación de ítems en Canvas
-    │   ├── extractor.py          # Motor de descarga (PDF, Video, HTML)
-    │   ├── login.py              # Gestión de inicio de sesión automático
-    │   └── player.py             # Motor de simulación y reproducción humana
-    ├── extractors/
-    │   ├── html_extractor.py     # Extracción y limpieza de HTML
-    │   ├── pdf_extractor.py      # Extracción de PDF desde visor Canvas
-    │   └── video_extractor.py    # Descarga de video y subtítulos
-    ├── media/
-    │   ├── ffmpeg_runner.py      # Interfaz con FFmpeg para compresión y subtítulos
-    │   └── pdf_builder.py        # Ensamblador de páginas PDF con Pillow
-    └── ui/
-        └── console.py            # Menús de consola interactivos
+    │   ├── discovery.py          # Detección de módulos y omisión de exámenes
+    │   ├── extractor.py          # Motor de descargas
+    │   ├── login.py              # Login automático con credenciales
+    │   └── player.py             # Reproductor online con ritmo humano
+    ├── extractors/               # Extractores específicos (PDF, Video, HTML)
+    ├── media/                    # FFmpeg, subtítulos y ensamblado PDF
+    └── ui/                       # Interfaz de consola interactiva
 ```
 
 ---
 
 ## 📄 Licencia
-Proyecto desarrollado para fines educativos y de respaldo personal de material de estudio.
+Proyecto desarrollado con fines educativos y de respaldo personal de material de estudio para estudiantes de **IFTS 29**.
