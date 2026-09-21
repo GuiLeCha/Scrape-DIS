@@ -57,7 +57,7 @@ class Settings:
         )
         self.home_url = os.getenv(
             "AWS_HOME_URL",
-            "https://awsacademy.instructure.com/courses/000000/modules",
+            "https://awsacademy.instructure.com/courses/183094/modules",
         ).strip()
 
         # Credenciales de acceso AWS Academy (opcional, para auto-login)

@@ -82,8 +82,8 @@ Abre `.env` con cualquier editor de texto (Notepad, VS Code, etc.) y completa tu
 AWS_USER=tu_usuario_o_correo@ejemplo.com
 AWS_PASSWORD=tu_contraseña_aqui
 
-# URL de la sección de módulos de tu curso
-AWS_HOME_URL=https://awsacademy.instructure.com/courses/000000/modules
+# URL de la sección de módulos de tu curso (por defecto: IFTS29 - 2C2026)
+AWS_HOME_URL=https://awsacademy.instructure.com/courses/183094/modules
 
 # ==============================================================================
 # 2. RUTAS LOCALES
@@ -109,6 +109,15 @@ SIM_PDF_PAGE_SECONDS=12      # Segundos que permanece en cada página del PDF
 SIM_HTML_READING_SECONDS=10  # Segundos de lectura en páginas de texto
 SIM_SCROLL_DELAY=0.8         # Intervalo entre desplazamientos de scroll
 ```
+
+> [!NOTE]
+> **Identificador del Curso (`183094`):**
+> El valor `183094` en la URL predeterminada corresponde al curso **"AWS Academy Cloud Foundations para IFTS29 - 2C2026"**.  
+> Si perteneces a otra comisión, curso o institución, es posible que este identificador sea diferente. Para asegurarte:
+> 1. Inicia sesión en Canvas de AWS Academy y accede a tu curso.
+> 2. Dirígete a la pestaña **Módulos** (o *Modules*).
+> 3. Observa la barra de direcciones de tu navegador: verás un enlace similar a `https://awsacademy.instructure.com/courses/XXXXXX/modules`.
+> 4. Si el número no coincide con `183094`, copia tu número de curso y actualiza la variable `AWS_HOME_URL` en tu archivo `.env`.
 
 ---
 
