@@ -83,7 +83,7 @@ AWS_USER=tu_usuario_o_correo@ejemplo.com
 AWS_PASSWORD=tu_contraseña_aqui
 
 # URL de la sección de módulos de tu curso
-AWS_HOME_URL=https://awsacademy.instructure.com/courses/183094/modules
+AWS_HOME_URL=https://awsacademy.instructure.com/courses/000000/modules
 
 # ==============================================================================
 # 2. RUTAS LOCALES

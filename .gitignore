@@ -1,8 +1,12 @@
 # Entornos y credenciales sensibles
 .env
+.env.*
+!.env.example
 private/
 *.json
 !credentials_drive.example.json
+*.token
+*.key
 
 # Cache de Python
 __pycache__/
@@ -13,6 +17,9 @@ __pycache__/
 
 # Perfiles de navegador y checkpoints locales
 perfil_navegador/
+.aws_chrome_profile/
+*.session
+Singleton*
 checkpoints/
 *.tmp
 
@@ -21,6 +28,7 @@ checkpoints/
 
 # Materiales descargados
 descargas/
+descargas_aws/
 material/
 output/
 
